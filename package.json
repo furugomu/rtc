@@ -1,0 +1,39 @@
+{
+  "name": "headlessui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "socket": "ts-node-dev ./socketio.ts"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^1.5.2",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.3.0",
+    "@prisma/client": "^2.21.2",
+    "framer-motion": "^4.1.5",
+    "next": "10.1.3",
+    "next-auth": "^3.14.8",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "socket.io": "^4.0.1",
+    "socket.io-client": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/next-auth": "^3.13.0",
+    "@types/node": "^14.14.41",
+    "@types/react": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.2.1",
+    "prisma": "^2.21.2",
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^4.2.4"
+  }
+}
