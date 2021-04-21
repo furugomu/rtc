@@ -1,14 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { Box, Container, Stack } from "@chakra-ui/layout";
 import { Select } from "@chakra-ui/select";
-import { As, forwardRef } from "@chakra-ui/system";
-import {
-  MutableRefObject,
-  RefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { RTCClient } from "../src/rtc";
 
@@ -25,7 +18,7 @@ export default function Page() {
 
   // socket.io しょきか
   useEffect(() => {
-    const socket = io("http://tapi.local:3001");
+    const socket = io();
     socketRef.current = socket;
 
     socket.on("connect", () => {
