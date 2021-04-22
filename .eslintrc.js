@@ -10,7 +10,7 @@ module.exports = {
   rules: {
     complexity: ["warn", 6],
     eqeqeq: ["error", "smart"],
-    "no-console": "warn",
+    // "no-console": "warn",
     "no-undef": "off", // TS にまかせる
     "no-unused-vars": "off",
 

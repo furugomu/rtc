@@ -1,57 +1,61 @@
 import EventEmitter from "events";
 
 export class RTCClient {
-  con: RTCPeerConnection;
+  pc: RTCPeerConnection;
   emitter: EventEmitter;
   dataChannel?: RTCDataChannel;
 
   constructor() {
-    this.con = new RTCPeerConnection({ iceServers: [] });
-    this.con.onicecandidate = this.onIceCandidate.bind(this);
-    this.con.onconnectionstatechange = this.onConnectionStateChange.bind(this);
-    this.con.ondatachannel = this.onDataChannel.bind(this);
-    this.con.onsignalingstatechange = this.onSignalingStateChange.bind(this);
-    this.con.ontrack = this.onTrack.bind(this);
+    this.pc = new RTCPeerConnection({ iceServers: [] });
+    this.pc.onicecandidate = this.onIceCandidate.bind(this);
+    this.pc.onconnectionstatechange = this.onConnectionStateChange.bind(this);
+    this.pc.ondatachannel = this.onDataChannel.bind(this);
+    this.pc.onsignalingstatechange = this.onSignalingStateChange.bind(this);
+    this.pc.oniceconnectionstatechange = this.onIceConnectionStateChange.bind(
+      this
+    );
+    this.pc.ontrack = this.onTrack.bind(this);
 
     this.emitter = new EventEmitter();
   }
 
   async createOffer(): Promise<RTCSessionDescriptionInit> {
-    const offer = await this.con.createOffer();
-    await this.con.setLocalDescription(offer);
+    const offer = await this.pc.createOffer();
+    await this.pc.setLocalDescription(offer);
     return offer;
   }
 
   async receiveOffer(
     offer: RTCSessionDescription | RTCSessionDescriptionInit
   ): Promise<void> {
-    console.log("receiveOffer", this.con.signalingState);
-    return this.con.setRemoteDescription(offer);
+    console.log("receiveOffer", this.pc.signalingState);
+    return this.pc.setRemoteDescription(offer);
   }
 
   async createAnswer(): Promise<RTCSessionDescriptionInit> {
-    const answer = await this.con.createAnswer();
-    await this.con.setLocalDescription(answer);
+    const answer = await this.pc.createAnswer();
+    await this.pc.setLocalDescription(answer);
     return answer;
   }
 
   async receiveAnswer(
     answer: RTCSessionDescription | RTCSessionDescriptionInit
   ): Promise<void> {
-    console.log("receiveAnswer", this.con.signalingState);
-    return this.con.setRemoteDescription(answer);
+    console.log("receiveAnswer", this.pc.signalingState);
+    return this.pc.setRemoteDescription(answer);
   }
 
   async addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
-    return this.con.addIceCandidate(candidate);
+    console.log("addIceCandidate", candidate);
+    return this.pc.addIceCandidate(candidate);
   }
 
   addTrack(track: MediaStreamTrack, ...streams: MediaStream[]) {
-    this.con.addTrack(track, ...streams);
+    this.pc.addTrack(track, ...streams);
   }
 
   createDataChannel(label: string): RTCDataChannel {
-    this.dataChannel = this.con.createDataChannel(label);
+    this.dataChannel = this.pc.createDataChannel(label);
     return this.dataChannel;
   }
 
@@ -69,15 +73,24 @@ export class RTCClient {
     if (event.candidate) this.emit("icecandidate", event.candidate);
   }
   onConnectionStateChange(event: Event) {
-    console.log("onConnectionStateChange", this.con.connectionState, event);
+    console.log("onConnectionStateChange", this.pc.connectionState, event);
+    this.emit("connectionStateChange", this.pc.connectionState);
+  }
+  onIceConnectionStateChange(event: Event) {
+    console.log(
+      "onIceConnectionStateChange",
+      this.pc.iceConnectionState,
+      event
+    );
+    this.emit("iceConnectionStateChange", this.pc.iceConnectionState);
+  }
+  onSignalingStateChange(event: Event) {
+    console.log("onSignalingStateChange", this.pc.signalingState, event);
+    this.emit("signalingStateChange", this.pc.signalingState);
   }
   onDataChannel(event: RTCDataChannelEvent) {
     console.log("onDataChannel", event);
     this.emit("datachannel", event.channel);
-  }
-  onSignalingStateChange(event: Event) {
-    console.log("onSignalingStateChange", this.con.signalingState);
-    this.emit("signalingStateChange", this.con.signalingState);
   }
   onTrack(event: RTCTrackEvent) {
     console.log("onTrack", event);
@@ -85,9 +98,11 @@ export class RTCClient {
   }
 }
 
-type Events = {
+export type Events = {
   icecandidate: (candidate: RTCIceCandidate) => void;
   datachannel: (channel: RTCDataChannel) => void;
+  connectionStateChange: (state: RTCPeerConnectionState) => void;
+  iceConnectionStateChange: (state: RTCIceConnectionState) => void;
   signalingStateChange: (state: RTCSignalingState) => void;
   track: (streams: readonly MediaStream[]) => void;
 };
