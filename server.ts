@@ -4,6 +4,7 @@ import createSocketServer from "./src/socketio";
 
 const app = express();
 app.use(express.static("public"));
+app.use(express.static("dist"));
 const server = createServer(app);
 createSocketServer(server);
 const port = Number(process.env.PORT || 9999);
